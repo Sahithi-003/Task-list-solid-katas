@@ -29,8 +29,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -41,7 +41,7 @@
                     <programs>
                         <program>
                             <id>task-list</id>
-                            <mainClass>com.codurance.training.tasks.TaskList</mainClass>
+                            <mainClass>com.codurance.training.tasks.Runner</mainClass>
                         </program>
                     </programs>
                 </configuration>
