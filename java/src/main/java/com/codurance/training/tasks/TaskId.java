@@ -1,8 +1,8 @@
 package com.codurance.training.tasks;
 
-record TaskId (long id){
+record TaskId (String id){
     @Override
     public String toString(){
-        return String.valueOf(id);
+        return id;
     }
 }

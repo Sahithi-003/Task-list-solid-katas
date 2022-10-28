@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class TaskList {
     private final Map<String, List<Task>> tasks = new LinkedHashMap<>();
-    private TaskId lastId = new TaskId(0);
+    private long lastId = 0;
     String execute(String commandLine) {
         String[] commandRest = commandLine.split(" ", 2);
         String command = commandRest[0];
@@ -43,17 +43,23 @@ public class TaskList {
     }
 
     private String add(String commandLine) {
-        var writer = new StringWriter();
-        var out = new PrintWriter(writer);
         String[] subcommandRest = commandLine.split(" ", 2);
         String subcommand = subcommandRest[0];
         if (subcommand.equals("project")) {
             addProject(subcommandRest[1]);
-        } else if (subcommand.equals("task")) {
+        } else if (subcommand.startsWith("task")) {
+            String taskId = null;
             String[] projectTask = subcommandRest[1].split(" ", 2);
-            addTask(projectTask[0], projectTask[1]);
+            String project = projectTask[0];
+            String task = projectTask[1];
+            if (subcommandRest[0].equals("task")){
+
+            }else {
+                taskId = subcommandRest[0].substring(5 , subcommandRest[0].length() - 1);
+            }
+            addTask(project, task, taskId);
         }
-        return writer.toString();
+        return "";
     }
 
     private String addProject(String name) {
@@ -61,7 +67,7 @@ public class TaskList {
         return "";
     }
 
-    private String addTask(String project, String description) {
+    private String addTask(String project, String description, String taskId) {
         var writer = new StringWriter();
         var out = new PrintWriter(writer);
         List<Task> projectTasks = tasks.get(project);
@@ -69,32 +75,36 @@ public class TaskList {
             out.printf("Could not find a project with the name \"%s\".", project);
             out.println();
         }
-        projectTasks.add(new Task(nextId(), description, false));
+        TaskId id;
+        if(taskId == null){
+            id = nextId();
+        }
+        else {
+            id = new TaskId(taskId);
+        }
+        projectTasks.add(new Task(id, description, false));
         return writer.toString();
     }
 
     private String check(String idString) {
-        setDone(idString, true);
-        return "";
+        return setDone(idString, true);
     }
 
     private String uncheck(String idString) {
-        setDone(idString, false);
-        return "";
+        return setDone(idString, false);
     }
 
     private String setDone(String idString, boolean done) {
         var writer = new StringWriter();
         var out = new PrintWriter(writer);
-        int id = Integer.parseInt(idString);
         for (Map.Entry<String, List<Task>> project : tasks.entrySet()) {
             for (Task task : project.getValue()) {
-                if (task.getId().id() == id) {
+                if (idString.equals(task.getId().id() )) {
                     task.setDone(done);
                 }
             }
         }
-        out.printf("Could not find a task with an ID of %d.", id);
+        out.printf("Could not find a task with an ID of %s.", idString);
         out.println();
         return writer.toString();
     }
@@ -121,7 +131,7 @@ public class TaskList {
     }
 
     private TaskId nextId() {
-        lastId = new TaskId(lastId.id() + 1);
-        return lastId;
+        lastId++;
+        return new TaskId(String.valueOf(lastId));
     }
 }
