@@ -1,13 +1,12 @@
 package com.codurance.training.tasks;
 
+import com.codurance.training.tasks.command.Command;
+import com.codurance.training.tasks.command.CommandFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public final class Runner implements Runnable {
     private static final String QUIT = "quit";
@@ -33,16 +32,18 @@ public final class Runner implements Runnable {
         while (true) {
             out.print("> ");
             out.flush();
-            String command;
+            String commandLine;
             try {
-                command = in.readLine();
+                commandLine = in.readLine();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if (command.equals(QUIT)) {
+            if (commandLine.equals(QUIT)) {
                 break;
             }
-            out.print(taskList.execute(command));
+            Command command = CommandFactory.createCommand(commandLine);
+            String result = command.execute(taskList);
+            out.print(result);
         }
     }
 }
